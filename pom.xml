@@ -30,12 +30,19 @@
         <java.version>17</java.version>
         <openapi-generator-version>7.2.0</openapi-generator-version>
         <springdoc-version>2.3.0</springdoc-version>
+        <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>${jackson-databind-nullable-version}</version>
         </dependency>
 
         <dependency>
