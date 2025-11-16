@@ -2,11 +2,10 @@
 
 A Spring Boot reactive REST API service for querying product prices with priority-based rate selection.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Architecture](#architecture)
-- [Features](#features)
 - [Technical Stack](#technical-stack)
 - [Prerequisites](#prerequisites)
 - [Installation & Setup](#installation--setup)
@@ -15,17 +14,19 @@ A Spring Boot reactive REST API service for querying product prices with priorit
 - [Testing](#testing)
 - [Database Schema](#database-schema)
 - [Design Decisions](#design-decisions)
+- [Logging Strategy](#logging-strategy)
 
-## 🎯 Overview
+## Overview
 
-This service provides a REST endpoint to query the applicable price for a product based on:
-- **Application Date**: The date and time when the price should apply
-- **Product ID**: Unique identifier for the product
-- **Brand ID**: Unique identifier for the brand (e.g., 1 = ZARA)
+This service provides a REST endpoint to query the applicable price for a product. The system determines which price applies based on three criteria:
 
-The service returns the single most applicable price based on date range and priority rules.
+- **Application Date** - The date and time when the price should be valid
+- **Product ID** - The product identifier
+- **Brand ID** - The brand identifier (e.g., 1 = ZARA)
 
-## 🏗️ Architecture
+When multiple prices match the search criteria and have overlapping date ranges, the system selects the one with the highest priority value. This ensures that promotional or special pricing always takes precedence over standard rates.
+
+## Architecture
 
 This project follows **Hexagonal Architecture** (Ports and Adapters) with clean separation of concerns:
 
@@ -46,28 +47,17 @@ src/
     └── bootstrap/          # Application initialization
 ```
 
-### SOLID Principles Applied
+### SOLID Principles
 
-- **Single Responsibility**: Each class has one reason to change
-- **Open/Closed**: Extensible without modification (port/adapter pattern)
-- **Liskov Substitution**: Interfaces can be swapped with implementations
-- **Interface Segregation**: Small, focused interfaces (use cases)
-- **Dependency Inversion**: Dependencies point inward to domain layer
+The codebase adheres to SOLID principles throughout:
 
-## ✨ Features
+- **Single Responsibility** - Each class has one clearly defined purpose
+- **Open/Closed** - The port/adapter pattern allows extension without modifying core logic
+- **Liskov Substitution** - Implementations can be swapped transparently
+- **Interface Segregation** - Small, focused interfaces define specific use cases
+- **Dependency Inversion** - All dependencies point inward toward the domain layer
 
-- ✅ REST API following OpenAPI specification
-- ✅ Reactive programming with Spring WebFlux and R2DBC
-- ✅ H2 in-memory database with automatic initialization
-- ✅ Priority-based price selection with database-level optimization
-- ✅ Comprehensive error handling with meaningful messages
-- ✅ Input validation
-- ✅ Immutable domain models using Java records
-- ✅ Full test coverage (integration and unit tests)
-- ✅ Structured logging
-- ✅ Clean code architecture
-
-## 🛠️ Technical Stack
+## Technical Stack
 
 - **Java**: 17
 - **Spring Boot**: 3.5.7
@@ -79,13 +69,13 @@ src/
 - **JUnit 5 & Mockito**: Testing framework
 - **Maven**: Build tool
 
-## 📦 Prerequisites
+## Prerequisites
 
 - **JDK 17** or higher
 - **Maven 3.6+** (or use included Maven wrapper)
 - Git (for cloning)
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -118,7 +108,7 @@ This will:
 - Run all tests
 - Package the application as a JAR
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Option 1: Using Maven
 
@@ -144,7 +134,7 @@ The application will start on **http://localhost:8080**
 curl "http://localhost:8080/api/v1/prices?applicationDate=2020-06-14T10:00:00Z&productId=35455&brandId=1"
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 ### Endpoint
 
@@ -208,7 +198,7 @@ Once the application is running, access Swagger UI at:
 http://localhost:8080/swagger-ui.html
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Run All Tests
 
@@ -218,21 +208,25 @@ mvn test
 
 ### Test Coverage
 
-The project includes:
+The project includes comprehensive test coverage at multiple levels:
 
 #### Integration Tests
-- ✅ Test 1: Query at 10:00 on June 14 → Returns price 35.50 (priceList 1)
-- ✅ Test 2: Query at 16:00 on June 14 → Returns price 25.45 (priceList 2, higher priority)
-- ✅ Test 3: Query at 21:00 on June 14 → Returns price 35.50 (priceList 1)
-- ✅ Test 4: Query at 10:00 on June 15 → Returns price 30.50 (priceList 3)
-- ✅ Test 5: Query at 21:00 on June 16 → Returns price 38.95 (priceList 4)
-- ✅ Test 6: Query with non-existent data → Returns 404
+
+All five required test cases from the specification are implemented and passing:
+
+1. Query at 10:00 on June 14 → Returns price 35.50 (priceList 1)
+2. Query at 16:00 on June 14 → Returns price 25.45 (priceList 2, higher priority)
+3. Query at 21:00 on June 14 → Returns price 35.50 (priceList 1)
+4. Query at 10:00 on June 15 → Returns price 30.50 (priceList 3)
+5. Query at 21:00 on June 16 → Returns price 38.95 (priceList 4)
+
+Additional test for error handling when no price is found (404 response).
 
 #### Unit Tests
-- **PricingService**: Business logic validation
-- **PriceEntityMapper**: Domain/entity mapping
-- Mock-based testing with Mockito
-- Reactive testing with StepVerifier
+
+- **PricingService** - Business logic validation with mocked dependencies
+- **PriceEntityMapper** - Domain/entity mapping correctness
+- Uses Mockito for mocking and StepVerifier for reactive stream testing
 
 ### Run Specific Test Class
 
@@ -242,7 +236,7 @@ mvn test -Dtest=PricingServiceTest
 mvn test -Dtest=PriceEntityMapperTest
 ```
 
-## 💾 Database Schema
+## Database Schema
 
 ### PRICES Table
 
@@ -274,89 +268,93 @@ The database is automatically initialized with test data:
 | 1 | 2020-06-15 00:00:00 | 2020-06-15 11:00:00 | 3 | 35455 | 1 | 30.50 | EUR |
 | 1 | 2020-06-15 16:00:00 | 2020-12-31 23:59:59 | 4 | 35455 | 1 | 38.95 | EUR |
 
-## 🎨 Design Decisions
+## Design Decisions
 
-### 1. Reactive Programming
+### Reactive Programming
 
-**Why**: Chosen Spring WebFlux + R2DBC for non-blocking I/O, better resource utilization, and scalability under high load.
+The application uses Spring WebFlux and R2DBC for fully reactive, non-blocking I/O. This choice provides better resource utilization and scalability under high concurrent load compared to traditional blocking approaches. The reactive model allows the server to handle thousands of concurrent requests with a small thread pool.
 
-### 2. Database-Level Optimization
+### Immutable Domain Models
 
-**Implementation**: Query includes `ORDER BY PRIORITY DESC LIMIT 1` to:
-- Reduce network overhead (single result instead of multiple)
-- Minimize memory usage (no in-memory sorting)
-- Leverage database indexing
-- Improve performance significantly
+The `Price` domain model uses Java 17 records, which provide:
 
-```sql
-SELECT * FROM PRICES 
-WHERE PRODUCT_ID = ? AND BRAND_ID = ? 
-  AND ? BETWEEN START_DATE AND END_DATE
-ORDER BY PRIORITY DESC 
-LIMIT 1
+- Immutability by default (thread-safe)
+- Protection against accidental state mutations
+- Concise syntax with automatic getters, equals(), hashCode(), and toString()
+- Clear alignment with Domain-Driven Design principles
+
+### OpenAPI-First Development
+
+The API contract is defined first in `openapi/products.yaml`, then models and interfaces are generated. This ensures:
+
+- The API contract is the single source of truth
+- Client and server implementations stay in sync
+- Automatic documentation generation
+- Type-safe request/response handling
+
+### Error Handling Strategy
+
+A global exception handler (`@RestControllerAdvice`) provides consistent error responses across the API:
+
+- Business exceptions (like `PriceNotFoundException`) map to appropriate HTTP status codes
+- All error responses follow a consistent structure with timestamp, status, message, and path
+- Validation errors return 400 (Bad Request) with clear messages
+- Internal errors return 500 with safe, non-exposing messages
+
+### Input Validation
+
+Validation occurs at the controller boundary (adapter layer):
+
+- Null checks for required parameters
+- Business rule validation (positive IDs)
+- Early failure with clear error messages
+- Prevents invalid data from reaching the domain layer
+
+## Logging Strategy
+
+The application implements production-ready logging following these principles:
+
+### Log Levels
+
+- **INFO** - Key business events (price found, request received, successful operations)
+- **WARN** - Recoverable issues (price not found, validation failures)
+- **ERROR** - Unexpected errors requiring investigation
+- **DEBUG** - Detailed information useful during development and troubleshooting
+
+### Structured Logging
+
+Each log entry includes relevant context:
+
+```
+INFO  - Price request fulfilled - productId: 35455, brandId: 1, priceList: 2, price: 25.45 EUR
+WARN  - No applicable price found - applicationDate: 2021-01-01T10:00, productId: 99999, brandId: 1
+ERROR - Price request failed - productId: 35455, brandId: 1, error: Database connection error
 ```
 
-### 3. Immutable Domain Models
+This structured approach allows for easy log aggregation, filtering, and analysis in production monitoring tools.
 
-**Why**: Used Java records for the `Price` domain model:
-- Thread-safe by design
-- Prevents accidental mutations
-- Follows DDD principles
-- Concise syntax with built-in getters, equals, hashCode, toString
+### Request Tracing
 
-### 4. OpenAPI-First Approach
+The system logs at key points in the request lifecycle:
 
-**Why**: Define API contract first, then generate code:
-- Contract-driven development
-- Ensures API consistency
-- Automatic model generation
-- Built-in documentation
+1. Controller layer - Request received with parameters
+2. Service layer - Business operation result
+3. Repository layer - Database query execution
+4. Error handler - Exception details
 
-### 5. Hexagonal Architecture
+This allows tracing a request through all layers when troubleshooting issues.
 
-**Benefits**:
-- Business logic isolated from infrastructure
-- Easy to test (mock external dependencies)
-- Technology-agnostic domain layer
-- Clear boundaries between layers
-- Maintainable and extensible
+## Performance Considerations
 
-### 6. Comprehensive Error Handling
+**Database Indexing** - A composite index on (PRODUCT_ID, BRAND_ID, START_DATE, END_DATE) ensures fast query execution even with large datasets.
 
-**Implementation**:
-- Global exception handler
-- Meaningful error messages
-- Proper HTTP status codes (400, 404, 500)
-- Consistent error response format
-- Structured logging
+**Query Optimization** - Priority sorting and limiting happens in the database, avoiding unnecessary data transfer and in-memory processing.
 
-### 7. Input Validation
+**Reactive Streams** - Non-blocking I/O throughout the stack allows handling high concurrency with minimal resource consumption.
 
-**Validation Rules**:
-- All parameters required (null checks)
-- Product ID and Brand ID must be positive
-- Early validation at controller level
-- Clear error messages for invalid input
+**Efficient Mapping** - Single-pass conversion between entities and domain models with no intermediate collections or transformations.
 
-## 📊 Performance Considerations
-
-1. **Indexed Queries**: Composite index on (PRODUCT_ID, BRAND_ID, START_DATE, END_DATE)
-2. **Database Sorting**: Priority sorting done in database, not application
-3. **Single Result**: `LIMIT 1` returns only the needed record
-4. **Reactive Streams**: Non-blocking I/O for better concurrency
-5. **Efficient Mapping**: Single-pass entity-to-domain conversion
-
-## 🔍 Code Quality
-
-- ✅ Clean code principles
-- ✅ SOLID principles applied
-- ✅ Meaningful names and comments
-- ✅ Proper logging levels
-- ✅ Separation of concerns
-- ✅ DRY (Don't Repeat Yourself)
-- ✅ Testable design
-
-## 📝 Future Enhancements
+## Future Enhancements
 
 - Add caching layer (Redis) for frequently queried prices
 - Implement rate limiting
@@ -367,14 +365,14 @@ LIMIT 1
 - Implement circuit breaker pattern
 - Add distributed tracing
 
-## 👨‍💻 Author
+## Author
 
-Felipe
+Felipe Casanueva - Backend Java Developer
 
-## 📄 License
+## License
 
 This project is for technical review purposes.
 
 ---
 
-**Built with ❤️ using Spring Boot and Clean Architecture principles**
+Built with Spring Boot 3.5, Java 17, and Hexagonal Architecture principles.
