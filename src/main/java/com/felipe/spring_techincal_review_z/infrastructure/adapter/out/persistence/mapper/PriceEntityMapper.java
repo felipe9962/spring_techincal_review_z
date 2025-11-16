@@ -4,6 +4,10 @@ import com.felipe.spring_techincal_review_z.domain.model.Price;
 import com.felipe.spring_techincal_review_z.infrastructure.adapter.out.persistence.entity.PriceEntity;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper responsible for translating between domain models and persistence entities.
+ *
+ */
 @Component
 public class PriceEntityMapper {
 
