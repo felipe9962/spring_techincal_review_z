@@ -6,7 +6,7 @@ import com.felipe.spring_techincal_review_z.infrastructure.adapter.out.persisten
 import com.felipe.spring_techincal_review_z.infrastructure.adapter.out.persistence.repository.R2dbcPriceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import java.time.LocalDateTime;
 
 @Component
@@ -17,9 +17,9 @@ public class PriceRepositoryAdapter implements PriceRepository {
     private final PriceEntityMapper mapper;
 
     @Override
-    public Flux<Price> findApplicablePrices(LocalDateTime applicationDate, Long productId, Long brandId) {
+    public Mono<Price> findApplicablePrice(LocalDateTime applicationDate, Long productId, Long brandId) {
         return r2dbcRepository
-                .findApplicablePrices(applicationDate, productId, brandId)
+                .findApplicablePrice(applicationDate, productId, brandId)
                 .map(mapper::toDomain);
     }
 }

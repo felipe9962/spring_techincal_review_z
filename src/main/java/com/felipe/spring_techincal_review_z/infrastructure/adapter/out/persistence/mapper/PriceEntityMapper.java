@@ -31,15 +31,15 @@ public class PriceEntityMapper {
         }
 
         PriceEntity entity = new PriceEntity();
-        entity.setId(domain.getId());
-        entity.setBrandId(domain.getBrandId());
-        entity.setProductId(domain.getProductId());
-        entity.setPriceList(domain.getPriceList());
-        entity.setStartDate(domain.getStartDate());
-        entity.setEndDate(domain.getEndDate());
-        entity.setPrice(domain.getPrice());
-        entity.setCurrency(domain.getCurrency());
-        entity.setPriority(domain.getPriority());
+        entity.setId(domain.id());
+        entity.setBrandId(domain.brandId());
+        entity.setProductId(domain.productId());
+        entity.setPriceList(domain.priceList());
+        entity.setStartDate(domain.startDate());
+        entity.setEndDate(domain.endDate());
+        entity.setPrice(domain.price());
+        entity.setCurrency(domain.currency());
+        entity.setPriority(domain.priority());
         return entity;
     }
 }

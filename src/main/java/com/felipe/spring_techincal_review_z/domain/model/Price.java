@@ -1,24 +1,24 @@
 package com.felipe.spring_techincal_review_z.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@Builder
-public class Price {
-    private Long id;
-    private Long brandId;
-    private Long productId;
-    private Integer priceList;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-    private BigDecimal price;
-    private String currency;
-    private Integer priority;
+/**
+ * Immutable domain model representing a price with its applicable period and priority.
+ * This follows Domain-Driven Design principles using Java records for immutability.
+ */
+@Builder(toBuilder = true)
+public record Price(
+        Long id,
+        Long brandId,
+        Long productId,
+        Integer priceList,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        BigDecimal price,
+        String currency,
+        Integer priority
+) {
 }
