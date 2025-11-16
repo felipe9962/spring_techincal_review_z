@@ -1,6 +1,6 @@
 package com.felipe.spring_techincal_review_z;
 
-import com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest.model.PriceResponse;
+import com.felipe.api.model.PriceResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -23,7 +23,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2020-06-14T10:00:00")
+                        .queryParam("applicationDate", "2020-06-14T10:00:00Z")
                         .queryParam("productId", 35455)
                         .queryParam("brandId", 1)
                         .build())
@@ -45,7 +45,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2020-06-14T16:00:00")
+                        .queryParam("applicationDate", "2020-06-14T16:00:00Z")
                         .queryParam("productId", 35455)
                         .queryParam("brandId", 1)
                         .build())
@@ -67,7 +67,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2020-06-14T21:00:00")
+                        .queryParam("applicationDate", "2020-06-14T21:00:00Z")
                         .queryParam("productId", 35455)
                         .queryParam("brandId", 1)
                         .build())
@@ -89,7 +89,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2020-06-15T10:00:00")
+                        .queryParam("applicationDate", "2020-06-15T10:00:00Z")
                         .queryParam("productId", 35455)
                         .queryParam("brandId", 1)
                         .build())
@@ -111,7 +111,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2020-06-16T21:00:00")
+                        .queryParam("applicationDate", "2020-06-16T21:00:00Z")
                         .queryParam("productId", 35455)
                         .queryParam("brandId", 1)
                         .build())
@@ -131,7 +131,7 @@ class SpringTechincalReviewZApplicationTests {
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/prices")
-                        .queryParam("applicationDate", "2021-01-01T10:00:00")
+                        .queryParam("applicationDate", "2021-01-01T10:00:00Z")
                         .queryParam("productId", 99999)
                         .queryParam("brandId", 1)
                         .build())

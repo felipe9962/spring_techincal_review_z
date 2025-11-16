@@ -28,9 +28,12 @@
     </scm>
     <properties>
         <java.version>17</java.version>
-        <openapi-generator-version>7.2.0</openapi-generator-version>
-        <springdoc-version>2.3.0</springdoc-version>
+        <openapi.generator.version>7.6.0</openapi.generator.version>
         <jackson-databind-nullable-version>0.2.6</jackson-databind-nullable-version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <springdoc.version>2.8.14</springdoc.version>
+        <resilience4j.version>2.2.0</resilience4j.version>
+        <codehaus.mojo.version>3.5.0</codehaus.mojo.version>
     </properties>
 
     <dependencies>
@@ -76,7 +79,19 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>${springdoc-version}</version>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>${resilience4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation-api.version}</version>
         </dependency>
 
         <dependency>
@@ -99,32 +114,62 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- OpenAPI Generator Plugin -->
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${openapi-generator-version}</version>
+                <version>${openapi.generator.version}</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
+                        <id>generate-openapi</id>
+                        <goals><goal>generate</goal></goals>
                         <configuration>
+                            <!-- point to the file INSIDE the project -->
                             <inputSpec>${project.basedir}/openapi/products.yaml</inputSpec>
+
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest.api</apiPackage>
-                            <modelPackage>com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest.model</modelPackage>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+
+                            <apiPackage>com.felipe.api</apiPackage>
+                            <modelPackage>com.felipe.api.model</modelPackage>
+                            <invokerPackage>com.felipe.api.invoker</invokerPackage>
+
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            
                             <configOptions>
-                                <reactive>true</reactive>
                                 <interfaceOnly>true</interfaceOnly>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <skipDefaultInterface>true</skipDefaultInterface>
+                                <dateLibrary>java8</dateLibrary>
                                 <useTags>true</useTags>
+                                <openApiNullable>false</openApiNullable>
+                                <reactive>true</reactive>
+                                <useResponseEntity>false</useResponseEntity>
                             </configOptions>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- make Maven compile the generated code -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${codehaus.mojo.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

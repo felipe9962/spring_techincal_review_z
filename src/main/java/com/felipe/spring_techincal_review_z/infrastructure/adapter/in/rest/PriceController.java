@@ -1,10 +1,9 @@
 package com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest;
 
+import com.felipe.api.DefaultApi;
+import com.felipe.api.model.PriceResponse;
 import com.felipe.spring_techincal_review_z.domain.port.in.GetApplicablePriceUseCase;
-import com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest.api.DefaultApi;
-import com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest.model.PriceResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -20,7 +19,7 @@ public class PriceController implements DefaultApi {
     private final GetApplicablePriceUseCase getApplicablePriceUseCase;
 
     @Override
-    public Mono<ResponseEntity<PriceResponse>> getApplicablePrice(
+    public Mono<PriceResponse> getApplicablePrice(
             OffsetDateTime applicationDate,
             Long productId,
             Long brandId,
@@ -41,7 +40,7 @@ public class PriceController implements DefaultApi {
                     response.setEndDate(price.getEndDate().atOffset(ZoneOffset.UTC));
                     response.setPrice(price.getPrice().doubleValue());
                     response.setCurrency(price.getCurrency());
-                    return ResponseEntity.ok(response);
+                    return response;
                 });
     }
 }

@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS PRICES (
-                                      ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                      BRAND_ID BIGINT NOT NULL,
-                                      START_DATE TIMESTAMP NOT NULL,
-                                      END_DATE TIMESTAMP NOT NULL,
-                                      PRICE_LIST INT NOT NULL,
-                                      PRODUCT_ID BIGINT NOT NULL,
-                                      PRIORITY INT NOT NULL,
-                                      PRICE DECIMAL(10, 2) NOT NULL,
+    ID BIGINT AUTO_INCREMENT PRIMARY KEY,
+    BRAND_ID BIGINT NOT NULL,
+    START_DATE TIMESTAMP NOT NULL,
+    END_DATE TIMESTAMP NOT NULL,
+    PRICE_LIST INT NOT NULL,
+    PRODUCT_ID BIGINT NOT NULL,
+    PRIORITY INT NOT NULL,
+    PRICE DECIMAL(10, 2) NOT NULL,
     CURR VARCHAR(3) NOT NULL
-    );
+);
 
-CREATE INDEX idx_prices_lookup ON PRICES (PRODUCT_ID, BRAND_ID, START_DATE, END_DATE);
+CREATE INDEX IF NOT EXISTS idx_prices_lookup ON PRICES (PRODUCT_ID, BRAND_ID, START_DATE, END_DATE);
