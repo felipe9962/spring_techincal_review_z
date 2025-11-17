@@ -22,5 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit tests for service layer and mappers
 - AOP-based logging for request tracing
 - Database query optimization with composite index
+- Docker support with multi-stage build for optimal image size
+- Docker Compose configuration for easy deployment
+- Container health checks and resource limits
 
 [0.0.1-SNAPSHOT]: https://github.com/username/repo/releases/tag/v0.0.1

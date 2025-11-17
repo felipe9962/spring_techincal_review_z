@@ -71,12 +71,18 @@ The codebase strictly adheres to SOLID principles:
 - **OpenAPI Generator**: Contract-first API development
 - **JUnit 5 & Mockito**: Testing framework
 - **Maven**: Build tool
+- **Docker**: Containerization (multi-stage build)
 
 ## Prerequisites
 
+### Without Docker
 - **JDK 17** or higher
 - **Maven 3.6+** (or use included Maven wrapper)
 - Git (for cloning)
+
+### With Docker (Recommended)
+- **Docker Engine 20.10+**
+- **Docker Compose 2.0+**
 
 ## Installation & Setup
 
@@ -136,6 +142,51 @@ The application will start on **http://localhost:8080**
 ```bash
 curl "http://localhost:8080/api/v1/prices?applicationDate=2020-06-14T10:00:00Z&productId=35455&brandId=1"
 ```
+
+### Option 3: Using Docker
+
+Build and run the application using Docker Compose:
+
+```bash
+# Build and start the container
+docker-compose up -d
+
+# View logs
+docker-compose logs -f pricing-api
+
+# Stop the application
+docker-compose down
+```
+
+Alternatively, build and run the Docker image manually:
+
+```bash
+# Build the image
+docker build -t spring-pricing-api:latest .
+
+# Run the container
+docker run -d \
+  --name pricing-api \
+  -p 8080:8080 \
+  spring-pricing-api:latest
+```
+
+The Docker image uses a multi-stage build for optimal size (~200MB) and runs with a non-root user for security. Health checks and resource limits are pre-configured in the docker-compose.yml file.
+
+#### Docker Configuration
+
+The application can be configured using environment variables in `docker-compose.yml`:
+
+```yaml
+environment:
+  - SPRING_PROFILES_ACTIVE=prod     # Active profile (dev/test/prod)
+  - SERVER_PORT=8080                # Application port
+  - R2DBC_URL=r2dbc:h2:mem:///testdb
+  - R2DBC_USERNAME=sa
+  - R2DBC_POOL_MAX_SIZE=10
+```
+
+Logs are persisted to `./logs/application.log` on the host machine.
 
 ## API Documentation
 
