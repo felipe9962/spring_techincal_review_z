@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: spring_techincal_review_z
+  profiles:
+    active: dev
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.felipe.spring_techincal_review_z: INFO
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  h2:
+    console:
+      enabled: true
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+    include-exception: true
+
+logging:
+  level:
+    com.felipe.spring_techincal_review_z: DEBUG
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.h2: DEBUG
+    org.springframework.web: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  h2:
+    console:
+      enabled: false
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+logging:
+  level:
+    root: WARN
+    com.felipe.spring_techincal_review_z: INFO
+    org.springframework.web: WARN
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    root: WARN
+    com.felipe.spring_techincal_review_z: INFO
+    org.springframework.web: WARN

@@ -1,6 +1,6 @@
 package com.felipe.spring_techincal_review_z.domain.service;
 
-import com.felipe.spring_techincal_review_z.application.exception.PriceNotFoundException;
+import com.felipe.spring_techincal_review_z.domain.exception.PriceNotFoundException;
 import com.felipe.spring_techincal_review_z.domain.model.Price;
 import com.felipe.spring_techincal_review_z.domain.port.out.PriceRepository;
 import org.junit.jupiter.api.BeforeEach;

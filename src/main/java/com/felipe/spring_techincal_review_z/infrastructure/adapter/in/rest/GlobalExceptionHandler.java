@@ -1,7 +1,7 @@
 package com.felipe.spring_techincal_review_z.infrastructure.adapter.in.rest;
 
 import com.felipe.api.model.ErrorResponse;
-import com.felipe.spring_techincal_review_z.application.exception.PriceNotFoundException;
+import com.felipe.spring_techincal_review_z.domain.exception.PriceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
