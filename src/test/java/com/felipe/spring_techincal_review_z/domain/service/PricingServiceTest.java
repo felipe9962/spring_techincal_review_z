@@ -101,84 +101,63 @@ class PricingServiceTest {
     @DisplayName("Should throw exception when applicationDate is null")
     void shouldThrowExceptionWhenApplicationDateIsNull() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(null, 35455L, 1L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Application date cannot be null")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(null, 35455L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Application date cannot be null");
     }
 
     @Test
     @DisplayName("Should throw exception when productId is null")
     void shouldThrowExceptionWhenProductIdIsNull() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), null, 1L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Product ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), null, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Product ID must be positive");
     }
 
     @Test
     @DisplayName("Should throw exception when productId is zero")
     void shouldThrowExceptionWhenProductIdIsZero() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 0L, 1L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Product ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), 0L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Product ID must be positive");
     }
 
     @Test
     @DisplayName("Should throw exception when productId is negative")
     void shouldThrowExceptionWhenProductIdIsNegative() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), -1L, 1L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Product ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), -1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Product ID must be positive");
     }
 
     @Test
     @DisplayName("Should throw exception when brandId is null")
     void shouldThrowExceptionWhenBrandIdIsNull() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, null))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Brand ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Brand ID must be positive");
     }
 
     @Test
     @DisplayName("Should throw exception when brandId is zero")
     void shouldThrowExceptionWhenBrandIdIsZero() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, 0L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Brand ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, 0L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Brand ID must be positive");
     }
 
     @Test
     @DisplayName("Should throw exception when brandId is negative")
     void shouldThrowExceptionWhenBrandIdIsNegative() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, -1L))
-                .expectErrorMatches(throwable ->
-                        throwable instanceof IllegalArgumentException &&
-                                throwable.getMessage().equals("Brand ID must be positive")
-                )
-                .verify();
+        assertThatThrownBy(() -> pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, -1L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Brand ID must be positive");
     }
 
     @Test

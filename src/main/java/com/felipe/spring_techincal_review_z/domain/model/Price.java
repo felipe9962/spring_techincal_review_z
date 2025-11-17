@@ -25,14 +25,12 @@ public record Price(
         String currency,
         Integer priority
 ) {
-    // Add factory method to replace Builder pattern
     public static Price create(Long id, Long brandId, Long productId, Integer priceList,
                                LocalDateTime startDate, LocalDateTime endDate,
                                BigDecimal price, String currency, Integer priority) {
         return new Price(id, brandId, productId, priceList, startDate, endDate, price, currency, priority);
     }
 
-    // For creating test instances or modified copies
     public Price withPrice(BigDecimal newPrice) {
         return new Price(id, brandId, productId, priceList, startDate, endDate, newPrice, currency, priority);
     }
