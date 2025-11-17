@@ -139,4 +139,68 @@ class SpringTechincalReviewZApplicationTests {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    void testInvalidProductId() {
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/prices")
+                        .queryParam("applicationDate", "2020-06-14T10:00:00Z")
+                        .queryParam("productId", -1)
+                        .queryParam("brandId", 1)
+                        .build())
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testInvalidBrandId() {
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/prices")
+                        .queryParam("applicationDate", "2020-06-14T10:00:00Z")
+                        .queryParam("productId", 35455)
+                        .queryParam("brandId", 0)
+                        .build())
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testBoundaryStartDate() {
+        // Test exactly at start date of price range
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/prices")
+                        .queryParam("applicationDate", "2020-06-14T00:00:00Z")
+                        .queryParam("productId", 35455)
+                        .queryParam("brandId", 1)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PriceResponse.class)
+                .value(response -> {
+                    assertThat(response.getPriceList()).isEqualTo(1);
+                    assertThat(response.getPrice()).isEqualTo(35.50);
+                });
+    }
+
+    @Test
+    void testBoundaryEndDate() {
+        // Test exactly at end date of price range
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/prices")
+                        .queryParam("applicationDate", "2020-06-14T18:30:00Z")
+                        .queryParam("productId", 35455)
+                        .queryParam("brandId", 1)
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PriceResponse.class)
+                .value(response -> {
+                    assertThat(response.getPriceList()).isEqualTo(2);
+                    assertThat(response.getPrice()).isEqualTo(25.45);
+                });
+    }
+
 }

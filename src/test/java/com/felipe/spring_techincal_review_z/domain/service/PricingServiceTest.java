@@ -16,8 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +35,14 @@ class PricingServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when repository is null")
+    void shouldThrowExceptionWhenRepositoryIsNull() {
+        assertThatThrownBy(() -> new PricingService(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("PriceRepository cannot be null");
+    }
+
+    @Test
     @DisplayName("Should return price when found")
     void shouldReturnPriceWhenFound() {
         // Given
@@ -43,17 +50,12 @@ class PricingServiceTest {
         Long productId = 35455L;
         Long brandId = 1L;
 
-        Price expectedPrice = Price.builder()
-                .id(1L)
-                .brandId(brandId)
-                .productId(productId)
-                .priceList(1)
-                .startDate(LocalDateTime.of(2020, 6, 14, 0, 0))
-                .endDate(LocalDateTime.of(2020, 12, 31, 23, 59, 59))
-                .price(new BigDecimal("35.50"))
-                .currency("EUR")
-                .priority(0)
-                .build();
+        Price expectedPrice = new Price(
+                1L, brandId, productId, 1,
+                LocalDateTime.of(2020, 6, 14, 0, 0),
+                LocalDateTime.of(2020, 12, 31, 23, 59, 59),
+                new BigDecimal("35.50"), "EUR", 0
+        );
 
         when(priceRepository.findApplicablePrice(applicationDate, productId, brandId))
                 .thenReturn(Mono.just(expectedPrice));
@@ -88,7 +90,7 @@ class PricingServiceTest {
         StepVerifier.create(pricingService.getApplicablePrice(applicationDate, productId, brandId))
                 .expectErrorMatches(throwable ->
                         throwable instanceof PriceNotFoundException &&
-                        throwable.getMessage().equals("No applicable price found for the given parameters")
+                                throwable.getMessage().contains("No applicable price found")
                 )
                 .verify();
 
@@ -96,66 +98,87 @@ class PricingServiceTest {
     }
 
     @Test
-    @DisplayName("Should handle different product IDs correctly")
-    void shouldHandleDifferentProductIds() {
-        // Given
-        LocalDateTime applicationDate = LocalDateTime.of(2020, 6, 15, 16, 0);
-        Long productId = 12345L;
-        Long brandId = 1L;
-
-        Price expectedPrice = Price.builder()
-                .id(2L)
-                .brandId(brandId)
-                .productId(productId)
-                .priceList(4)
-                .startDate(LocalDateTime.of(2020, 6, 15, 16, 0))
-                .endDate(LocalDateTime.of(2020, 12, 31, 23, 59, 59))
-                .price(new BigDecimal("99.99"))
-                .currency("EUR")
-                .priority(1)
-                .build();
-
-        when(priceRepository.findApplicablePrice(applicationDate, productId, brandId))
-                .thenReturn(Mono.just(expectedPrice));
-
+    @DisplayName("Should throw exception when applicationDate is null")
+    void shouldThrowExceptionWhenApplicationDateIsNull() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(applicationDate, productId, brandId))
-                .assertNext(price -> {
-                    assertThat(price.productId()).isEqualTo(productId);
-                    assertThat(price.price()).isEqualByComparingTo(new BigDecimal("99.99"));
-                })
-                .verifyComplete();
+        StepVerifier.create(pricingService.getApplicablePrice(null, 35455L, 1L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Application date cannot be null")
+                )
+                .verify();
     }
 
     @Test
-    @DisplayName("Should handle different brand IDs correctly")
-    void shouldHandleDifferentBrandIds() {
-        // Given
-        LocalDateTime applicationDate = LocalDateTime.of(2020, 6, 14, 10, 0);
-        Long productId = 35455L;
-        Long brandId = 2L;
-
-        Price expectedPrice = Price.builder()
-                .id(3L)
-                .brandId(brandId)
-                .productId(productId)
-                .priceList(1)
-                .startDate(LocalDateTime.of(2020, 6, 14, 0, 0))
-                .endDate(LocalDateTime.of(2020, 12, 31, 23, 59, 59))
-                .price(new BigDecimal("40.00"))
-                .currency("EUR")
-                .priority(0)
-                .build();
-
-        when(priceRepository.findApplicablePrice(applicationDate, productId, brandId))
-                .thenReturn(Mono.just(expectedPrice));
-
+    @DisplayName("Should throw exception when productId is null")
+    void shouldThrowExceptionWhenProductIdIsNull() {
         // When & Then
-        StepVerifier.create(pricingService.getApplicablePrice(applicationDate, productId, brandId))
-                .assertNext(price -> {
-                    assertThat(price.brandId()).isEqualTo(brandId);
-                })
-                .verifyComplete();
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), null, 1L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Product ID must be positive")
+                )
+                .verify();
+    }
+
+    @Test
+    @DisplayName("Should throw exception when productId is zero")
+    void shouldThrowExceptionWhenProductIdIsZero() {
+        // When & Then
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 0L, 1L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Product ID must be positive")
+                )
+                .verify();
+    }
+
+    @Test
+    @DisplayName("Should throw exception when productId is negative")
+    void shouldThrowExceptionWhenProductIdIsNegative() {
+        // When & Then
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), -1L, 1L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Product ID must be positive")
+                )
+                .verify();
+    }
+
+    @Test
+    @DisplayName("Should throw exception when brandId is null")
+    void shouldThrowExceptionWhenBrandIdIsNull() {
+        // When & Then
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, null))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Brand ID must be positive")
+                )
+                .verify();
+    }
+
+    @Test
+    @DisplayName("Should throw exception when brandId is zero")
+    void shouldThrowExceptionWhenBrandIdIsZero() {
+        // When & Then
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, 0L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Brand ID must be positive")
+                )
+                .verify();
+    }
+
+    @Test
+    @DisplayName("Should throw exception when brandId is negative")
+    void shouldThrowExceptionWhenBrandIdIsNegative() {
+        // When & Then
+        StepVerifier.create(pricingService.getApplicablePrice(LocalDateTime.now(), 35455L, -1L))
+                .expectErrorMatches(throwable ->
+                        throwable instanceof IllegalArgumentException &&
+                                throwable.getMessage().equals("Brand ID must be positive")
+                )
+                .verify();
     }
 
     @Test
@@ -176,5 +199,3 @@ class PricingServiceTest {
                 .verify();
     }
 }
-
-

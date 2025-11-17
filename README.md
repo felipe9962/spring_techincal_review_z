@@ -32,30 +32,33 @@ This project follows **Hexagonal Architecture** (Ports and Adapters) with clean 
 
 ```
 src/
-├── domain/                    # Business logic layer (core)
-│   ├── model/                # Domain entities (immutable)
+├── domain/                    # Business logic layer (core) - PURE JAVA, NO FRAMEWORK
+│   ├── model/                # Domain entities (immutable records)
 │   ├── port/
-│   │   ├── in/              # Input ports (use cases)
+│   │   ├── in/              # Input ports (use cases interfaces)
 │   │   └── out/             # Output ports (repository interfaces)
-│   └── service/             # Business logic implementation
-├── application/              # Application configuration
-│   └── exception/           # Business exceptions
+│   ├── service/             # Business logic implementation (no annotations)
+│   └── exception/           # Domain exceptions
+├── application/              # Application configuration (FRAMEWORK LAYER)
+│   ├── config/              # Spring configuration, bean wiring
+│   └── exception/           # Application-level exceptions (if needed)
 └── infrastructure/           # External concerns
     ├── adapter/
     │   ├── in/rest/        # REST controllers (input adapters)
     │   └── out/persistence/ # Database adapters (output adapters)
+    ├── aspect/             # Cross-cutting concerns (logging, metrics)
     └── bootstrap/          # Application initialization
 ```
 
 ### SOLID Principles
 
-The codebase adheres to SOLID principles throughout:
+The codebase strictly adheres to SOLID principles:
 
 - **Single Responsibility** - Each class has one clearly defined purpose
 - **Open/Closed** - The port/adapter pattern allows extension without modifying core logic
 - **Liskov Substitution** - Implementations can be swapped transparently
 - **Interface Segregation** - Small, focused interfaces define specific use cases
-- **Dependency Inversion** - All dependencies point inward toward the domain layer
+- **Dependency Inversion** - The domain layer has NO dependencies. All framework code is in application/infrastructure layers. Dependencies point inward toward the domain.
 
 ## Technical Stack
 

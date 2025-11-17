@@ -1,7 +1,5 @@
 package com.felipe.spring_techincal_review_z.domain.model;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -16,7 +14,6 @@ import java.time.LocalDateTime;
  *   <li><b>startDate/endDate</b>: Inclusive date range defining when this price is applicable</li>
  * </ul>
  */
-@Builder(toBuilder = true)
 public record Price(
         Long id,
         Long brandId,
@@ -28,4 +25,19 @@ public record Price(
         String currency,
         Integer priority
 ) {
+    // Add factory method to replace Builder pattern
+    public static Price create(Long id, Long brandId, Long productId, Integer priceList,
+                               LocalDateTime startDate, LocalDateTime endDate,
+                               BigDecimal price, String currency, Integer priority) {
+        return new Price(id, brandId, productId, priceList, startDate, endDate, price, currency, priority);
+    }
+
+    // For creating test instances or modified copies
+    public Price withPrice(BigDecimal newPrice) {
+        return new Price(id, brandId, productId, priceList, startDate, endDate, newPrice, currency, priority);
+    }
+
+    public Price withPriority(Integer newPriority) {
+        return new Price(id, brandId, productId, priceList, startDate, endDate, price, currency, newPriority);
+    }
 }

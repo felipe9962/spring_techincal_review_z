@@ -16,17 +16,17 @@ public class PriceEntityMapper {
             return null;
         }
 
-        return Price.builder()
-                .id(entity.getId())
-                .brandId(entity.getBrandId())
-                .productId(entity.getProductId())
-                .priceList(entity.getPriceList())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .price(entity.getPrice())
-                .currency(entity.getCurrency())
-                .priority(entity.getPriority())
-                .build();
+        return new Price(
+                entity.getId(),
+                entity.getBrandId(),
+                entity.getProductId(),
+                entity.getPriceList(),
+                entity.getStartDate(),
+                entity.getEndDate(),
+                entity.getPrice(),
+                entity.getCurrency(),
+                entity.getPriority()
+        );
     }
 
     public PriceEntity toEntity(Price domain) {
